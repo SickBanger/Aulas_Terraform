@@ -1,13 +1,12 @@
 provider "aws" {
 
-  region = "região mais próxima"
-}
+  region = var.aws_region 
+  profile = var.aws_profile 
 
 resource "aws_instance" "web" {
-  ami           = ""
-  instance_type = "t3.micro"
+  ami           = var.instance_ami 
+  instance_type = var.instande_type 
 
-  tags = {
-    Name = "HelloWorld"
+  tags = var.instance_tags 
   }
 }
