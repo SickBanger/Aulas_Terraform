@@ -1,0 +1,754 @@
+** Comandos Básicos Terraform 
+
+*** Documentação de apoio e atualização constante 
+
+OBS: Documentação --> https://registry.terraform.io/browse/providers
+Lista de Comandos e instruções de uso 
+# terraform -h
+
+Lista de Ajuda para comandos 
+# (comando) -h
+
+Iniciar um diretório Terraform 
+# terraform init 
+
+Planejar a execução 
+# terraform plan 
+
+Executar Aplicação 
+# Terraform Apply
+
+Formatar script
+# Terraform fmt
+
+Validando as alterações
+#Terraform Validate 
+
+"Update in-Place"
+# Significa que o Terraform irá atualizar o provisionamento sem destruir os recursos já criados.
+
+"Alterando o nome do recurso"
+# Essa ação após aplicada não modifica o recurso já existente mas sim exclui esses elementos e adiciona outros.
+
+Destruindo Recurso
+#Terraform Destroy
+
+"Utilização de Variáveis"
+# Tem como definição o conceito de variáveis a customização sem alterar o código fonte.
+
+"Documentação sobre implantação de variáveis"
+# https://www.terraform.io/docs/language/values/variables.html
+
+"Se você retirar o valor "default" da variável durante a estruturação do Script é possível realizar a seleção do mesmo em "Runtime". Ou seja na hora da execução do script.
+#------
+
+"É possível utilizar uma variável no momento de execução da Pipeline" (Forma 1)
+# TF_VAR_aws.variavel=valor da variável Terraform plan 
+
+"É possível utilizar uma variável no momento de execução da Pipeline" (Forma 2)
+# terraform plan -var="aws_variavel=nome da variável"
+
+"Sobrescrever o valor de uma variável"
+# terraform plan -var="aws_variavel existente=nome da variavel" -var="tipo_da_nova_variavel=descrião
+
+--- Documentação: (https://registry.terraform.io/browse/providers)
+
+*** Criando um Bucket no Terraform
+
+Realize o processo de download da sintaxe do Terraform 
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket
+
+Criar arquivo .gitignore a fim de otimizar a utilização do script
+# ------------
+
+Criar um arquivo "main.tf" junto ao VS Code
+# ------------
+
+Estruturar o script junto ao arquivo Main.tf
+# 
+
+provider "aws" {
+
+  region = "região mais próxima"
+}
+
+resource "aws_s3_bucket" "my-test-bucket" {
+  bucket = "nome único da Bucket"
+  acl    = "private"
+
+
+  tags = {
+    Name = "My bucket"
+    Environment = "Dev"
+    Managedby = "Terraform"
+  }
+}
+
+--- Salvar e sair 
+
+Acessar o Terminal e executar a automação
+# Terraform Init
+# Terraform Plan 
+# Terraform Apply
+
+*** Fixando uma versão fix do Provider 
+--- adicionar ---
+terraform {
+  required_version = "0.14.4"
+
+  
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "3.23.0"
+    }
+  }
+}
+
+ 
+provider "aws" {
+
+  region = "região mais próxima"
+}
+
+resource "aws_s3_bucket" "my-test-bucket" {
+  bucket = "nome único da Bucket"
+  acl    = "private"
+
+
+  tags = {
+    Name = "My bucket"
+    Environment = "Dev"
+    Managedby = "Terraform"
+  }
+}
+
+**** Alterar e destruir (alterar tag)
+
+provider "aws" {
+
+  region = "região mais próxima"
+}
+
+resource "aws_s3_bucket" "my-test-bucket" {
+  bucket = "nome único da Bucket"
+  acl    = "private"
+
+
+  tags = {
+    Name = "My bucket"
+    Environment = "Dev"
+    Managedby = "Terraform"
+    Owner = "Nome do Owner" ---> Realizado o processo de inclusão de mais dois itens nas tags.
+    UpdatedAt = "data"
+  }
+}
+
+Validando as alterações
+#Terraform Validate 
+
+Executar a formatação do script 
+#Terraform Format 
+
+Executar o Planejamento da automação criando uma flag com o objetivo de escrever o "plan" no arquivo e concedendo a possibilidade de executar um "apply" diretamente por ele.
+#Terraform plan -out="tfplan.out"
+
+Executando o apply através do arquivo criado no passo anterior "tfplan.out"
+#terraform apply "tfplan.out"
+
+Destruindo Recurso
+#Terraform Destroy
+
+Acessa o modointeratico onde é possível listar todos os atributos de algum atributo através da própria descriação dele.
+
+
+*** Criando uma instancia na AWS
+
+Realize o processo de download da sintaxe do Terraform 
+#https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance
+
+Estruturar o Script de automação do Terraform 
+#
+
+provider "aws" {
+
+  region = "região mais próxima"
+}
+
+resource "aws_instance" "web" {
+  ami           = Informe a ami da instancia em questão
+  instance_type = "t3.micro"
+
+  tags = {
+    Name = "HelloWorld"
+  }
+}
+
+Acessar a AWS (console) e conseguir a AMI da instância em questão.
+#------
+
+Utilizando Variaveis 
+# Converter o Código para utilização das variáveis
+
+# Criar um arquivo na estrutura e renomea-lo como "variables.tf"
+
+Definindo uma variável junto ao arquivo
+# 
+
+variable "aws_region" { ---> nesse caso foi definido uma variável para região, mas poderia ser qualuqer outra
+
+  type = string 
+  
+  description = ""
+  
+  default = "eu-central-1" --> pode ser qualuqer valor, nesse caso o valor definido foi a descrição da region 
+}
+  
+  
+  
+variable "aws_profile" {
+
+  type = string 
+  
+  description = ""
+  
+  default = "descrição do perfil"
+}
+
+
+
+variable "instance_ami"  {
+
+  type = string
+
+  description = ""
+
+  default = "código AMI"
+}
+
+  
+
+variable "instance_type" {
+
+  type = string
+  
+  description = ""
+  
+  default = "tipo da instancia"
+  
+}
+
+
+variable "instance_tags" {
+
+  type = map(string)
+  
+  description = ""
+  
+  default = {
+  
+     Name = "Nome do sistema operacional da Instancia"
+    
+     Project = "Nome do Projeto"
+    }
+    
+}
+   
+Modificar Pipeline adicionando variaveis
+
+
+provider "aws" {
+
+  region = var.aws_region --> definindo variáveis para "region"
+  
+  profile = var.aws_profile --> definindo variáveis para "profile"
+}
+
+resource "aws_instance" "web" {
+  ami           = var.instance_ami --> definindo variáveis para "ami"
+  instance_type = var.instande_type --> definindo variáveis para "type"
+
+  tags = var.instance_tags --> definindo variáveis para "type"
+  }
+}
+
+*** Definindo variáveis no ambiente Terraform utilizando variáveis (método 2)
+# Na IDE da console crie um arquivo chamado "Terraform.tfvars"
+
+aws_region = "região"
+aws_profile = "descrição do perfil"
+instance_ami = "identificação da instancia"
+instance_type = "tipo da instancia"
+
+-- Incluir a variável "environment" e deixar todas as variáveis como obrigatórios exceto as variáveis de TAGs e executar em um ambiente específico (será questionado)
+#
+
+variable "aws_region" { ---> nesse caso foi definido uma variável para região, mas poderia ser qualuqer outra
+
+  type = string 
+  
+  description = ""
+   
+}
+  
+variable "environment {
+
+  type = string
+  
+  description = ""  
+  
+}
+  
+  
+variable "aws_profile" {
+
+  type = string 
+  
+  description = ""
+  
+}
+
+
+
+variable "instance_ami"  {
+
+  type = string
+
+  description = ""
+
+}
+
+  
+
+variable "instance_type" {
+
+  type = string
+  
+  description = ""
+  
+  
+}
+
+
+variable "instance_tags" {
+
+  type = map(string)
+  
+  description = ""
+  
+  default = {
+  
+     Name = "Nome do sistema operacional da Instancia"
+    
+     Project = "Nome do Projeto"
+    }
+    
+}
+
+# terraform fmt 
+# terraform plan 
+
+-- Definir mais de um ambriente de execução
+
+Criar um novo arquivo 
+# dev.auto.tfvars
+
+-- Definindo o ambiente dentro do arquivo 
+
+# environment = "nome do ambiente"
+
+Criar um novo arquivo 
+# prod.tfvars 
+
+Formatar o script para sobrescrever algumas informações no novo ambiente
+#
+
+instance_type = "tipo da instancia"
+
+environment = "ambiente"
+
+instance_tags = {
+  
+  Name    = "Ubuntu"
+  
+  Project = "Nome do Projeto"
+  
+}
+
+# terraform plan -var-file="prod.tfvars"
+# terraform apply var.file="prod.tfvars" -auto-approve
+
+--- Utilizando interpolação, locals e outputs 
+
+-- Criando uma estrutura junto ao Terraform 
+
+Criando um arquivo "main.tf"
+# 
+
+terraform {...}
+
+
+
+provider "aws" {
+   
+  region = var.aws_region
+  
+  profile = var.aws_profile
+
+} 
+
+--- Criando um arquivo somente para o recurso a ser utilizado "s3.tf" neste caso um Bucket mas poderia ser qualquer um recurso:
+
+# 
+
+resource "aws_s3_bucket" "this" {
+
+  bucket = "meu-super-bucket"
+  
+  
+  tags = {
+    
+    Service     = "Curso Terraform"
+    
+    ManagedBy   = "Terraform"
+    
+    Environment = variável criada para o ambiente 
+    
+    Owner       = "Darlei Randel"
+    
+    }
+    
+}
+
+---- Criando um arquivo para variável "variables.tf"
+
+#
+
+variable "aws_region" {
+
+  type        = string 
+  
+  description = ""
+  
+  default     = "região a ser utilizada"
+  
+}
+ 
+ 
+variable "aws_profile" { 
+
+  type        = string
+  
+  description = ""
+  
+  default     = "nome do perfil"
+  
+}
+
+
+variable "environment" {
+
+  type        = string 
+  
+  description = ""
+  
+  default     = "ambiente"
+  
+}
+
+
+Será aplicado neste exemplo o recurso de interpolação
+# https://www.terraform.io/docs/configuration-0-11/interpolation.html
+
+Após a criação de todos os arquivos será utilizado o provider "random_pet" que gera um nome aleatório para utilização do recurso
+# https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/pet
+
+Criar arquivo "random.tf" e incluir o script 
+#
+
+resource "random_pet" "bucket" {
+
+  length = 5
+  
+}
+
+Aplicar a interpolação no recurso "s3.tf"
+# 
+
+resource "aws_s3_bucket" "this" {
+
+  bucket = "meu-super-bucket" ---> substituir por "${random_pet.bucket.id}-${var.environment}" (iniciado com a documentação e concatenado com a a variável do ambiente)
+  
+  
+  tags = {
+    
+    Service     = "Curso Terraform"
+    
+    ManagedBy   = "Terraform"
+    
+    Environment = variável criada para o ambiente 
+    
+    Owner       = "Darlei Randel"
+    
+    }
+    
+}
+
+#terraform init
+
+"Capture a versão do random.pet do Terraform e defina ela como padrão no Terraform "main.tf"
+# 
+
+terraform {
+
+  required_version = "0.14.4"
+  
+  
+  required_providers {
+  
+    aws = {
+    
+      source = "hashicorp/aws"
+      
+      version = "3.23.0"
+      
+      }
+    }
+    
+    required_providers {  ---> Copiar toda a sintaxe do "aws" e alterar os valores definindo eles como "random" juntamente com a versão desse provider
+  
+    random = {
+    
+      source = "hashicorp/random"
+      
+      version = "3.0.1"
+      
+      }
+    }
+}
+
+
+
+provider "aws" {
+   
+  region = var.aws_region
+  
+  profile = var.aws_profile
+
+} 
+
+#terraform plan -out="tfplan.out"
+#terraform apply "tflan.out"
+
+---- Projeto Local Values 
+
+Página da Documentação 
+# https://www.terraform.io/docs/language/values/locals.html
+
+Criar um arquivo novo chamado "locals.tf"
+#------
+
+Incluir no arquivo os arquivos de informações comuns 
+#
+
+locals {
+
+  common_tags = {   ---> Recortar essas informações do arquivo "s3.tf"
+
+    Service     = "Curso Terraform"
+
+    ManagedBy   = "Terraform"
+
+    Environment = var.environment
+
+    Owner       = "Darlei Randel"
+   }
+}
+   
+Agora iremos editar o arquivo "s3.tf" e incluir o caminho do "local" setado no passo anterior
+#
+
+resource "aws_s3_bucket" "this" {
+
+  bucket = "${random_pet.bucket.id}-${var.environment}" 
+  
+  
+  tags = local.common_tags
+  
+    
+}
+
+resource "aws_s3_bucket_object" "this" {  ---> essas definições executam uma ação "criar um arquivo e transaferir para o bucket que foi criado no passo anterior"
+  
+  bucket = aws_s3_bucket.this.bucket 
+  
+  key = "config/ips.jason" ---> Nome do arquivo citado para realizar a função 
+  
+}
+
+Criando arquivo de configuração "ips.json"
+#
+
+{
+
+ "public": ["127.0.0.0", '127.0.0.1", "127.0.0.2"],
+ "private": [255.255.255.0", "13.324.324.22"]
+}
+
+Definindo mais dois atributos obrigatórios para a criação do objeto no arquivo "s3.tf"
+#
+
+resource "aws_s3_bucket" "this" {
+
+  bucket = "${random_pet.bucket.id}-${var.environment}" 
+  
+  
+  tags = local.common_tags
+  
+}
+
+resource "aws_s3_bucket_object" "this" {  
+  
+  bucket = aws_s3_bucket.this.bucket 
+  
+  key = "config/ips.jason" 
+  
+  source = "ips.json" ---> caminho onde se encontra o objeto
+  
+  etag   = filemd5("ips.json") ---> (Identifica quando o arquivo foi alterado para realizar a modificação junto ao provider
+}
+
+-- "Note que o nome do arquivo "ips.json" pode se tornar um "locals" devido a quantidade de citações do mesmo "
+
+Adicionando o mais uma condição ao arquivo "locals.tf" relacionado ao arquivo "ips.json"
+#
+
+locals {
+  ip_filepath = "ips.json" ---> adicionada uma relaçã para o recusro e a descrição do arquivo referente
+  
+  common_tags = {   ---> Recortar essas informações do arquivo "s3.tf"
+
+    Service     = "Curso Terraform"
+
+    ManagedBy   = "Terraform"
+
+    Environment = var.environment
+
+    Owner       = "Darlei Randel"
+   
+   }
+   
+}
+
+"Realizando a ibnterpolação do "locals" no arquivo "s3.tf"
+#
+
+resource "aws_s3_bucket" "this" {
+
+  bucket = "${random_pet.bucket.id}-${var.environment}" 
+  
+  
+  tags = local.common_tags
+  
+}
+
+resource "aws_s3_bucket_object" "this" {  
+  
+  bucket = aws_s3_bucket.this.bucket 
+  
+  key = "config/${ips.jason}" ---> adicionada a concatenação do arquivo 
+  
+  source = local.ip_filepath ---> adicionado somente a mensão ao recurso transaformado em "locals"
+  
+  etag   = filemd5(local.ip_filepath) ---> (Identifica quando o arquivo foi alterado para realizar a modificação junto ao provider
+}
+
+#Terraform fmt
+#Terraform plan -out="tfplan.out"
+#Terraform apply -out="tfplan.out"
+
+--- Outputs
+
+Primeiro é necessário criar um arquivo e nomea-lo como "outputs.tf"
+# ----
+
+Adicionando informações ao script 
+# 
+
+output "bucket_name" {
+
+  value = aws_s3_bucket.this.bucket
+  
+}
+
+
+output "bucket_arn" {
+
+  value = aws_s3_bucket.this.arn
+  description = ""
+  
+}
+
+
+output !bucket_domain_name {
+
+  value = aws_s3_bucket.this.bucket_domain_name
+  
+}
+
+output "ips_file_path" {
+
+  value = "${aws_s3_bucket.this.bucket}/${aws_s3_bucketobject.this.key}"   ---> adicionando o caminho completo com interpolação 
+  
+}
+
+terraform plan -out="tfplan.out"
+terraform apply -out="tfplan.out"
+  
+  
+---- Terraform Import (utilizando no Bucket)
+
+Lendo a documentação e Entendendo o caso de uso
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket
+
+Realizando a importação do recurso utilizando o comando 
+# Terraform import aws_s3_bucket.bucket (nome do bucket)
+
+Após a reinicialização do comando o Terraform está solicitando que "Antes de importar um recurso, é necessário criar a configuração para ele no mudulo raíz (ou seja nesse caso no arquivo s3.tf)
+#------
+
+Configurando o recurso no arquivo "s3.tf"
+#
+
+resource "aws_s3_bucket" "this" {
+
+  bucket = "${random_pet.bucket.id}-${var.environment}" 
+  
+  
+  tags = local.common_tags
+  
+}
+
+resource "aws_s3_bucket" "manual" {
+
+  bucket = "nomedobucket"
+  
+  tags = { -----> adicionar todas as Tags do Bucket
+  
+    Criado = "14/01/2021"
+
+resource "aws_s3_bucket_object" "this" {  
+  
+  bucket = aws_s3_bucket.this.bucket 
+  
+  key = "config/${ips.jason}" ---> adicionada a concatenação do arquivo 
+  
+  source = local.ip_filepath ---> adicionado somente a mensão ao recurso transaformado em "locals"
+  
+  etag   = filemd5(local.ip_filepath) ---> (Identifica quando o arquivo foi alterado para realizar a modificação junto ao provider
+}
+
+## Terraform import aws_s3_bucket.manual(nome do bucket)
+
+--- Remote State 
+
